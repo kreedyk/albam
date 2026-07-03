@@ -106,66 +106,57 @@ class ALBAM_PT_ToolsPanel(bpy.types.Panel):
 
     def draw(self, context):
         layout = self.layout
-        row = layout.row()
-        row.label(text="Active Mesh")
-        row = layout.row()
-        row.prop(context.scene.albam.meshes, "all_meshes", text="")
-        row = layout.row()
-        op = row.operator('albam.split_uv_seams', text="Split UV Seams")
-        op.transfer_normals = context.scene.albam.tools_settings.split_uv_seams_transfer_normals
-        row.prop(
-            context.scene.albam.tools_settings,
-            "split_uv_seams_transfer_normals",
-            text="Transfer Normals",
-        )
-        layout.separator()
-        row = layout.row()
-        row.operator('albam.transfer_normals', text="Transfer normals from Active mesh")
-        row = layout.row()
-        row.operator('albam.batch_transfer_weights', text="Transfer skinweights from Active mesh")
-        layout.separator()
-        row = layout.row()
-        row.operator('albam.autoset_tex_params', text="Autoset texture params")
-        row.prop(
-            context.scene.albam.tools_settings,
-            "overwrite_tex_path",
-            text="Overwrite path if exists",
-        )
-        row = layout.row()
-        row.prop(
-            context.scene.albam.tools_settings,
-            "relative_path_to_textures",
-            text="",
-        )
-        layout.separator()
-        row = layout.row()
-        row.operator('albam.autorename_bones', text="Autorename bones")
-        row.prop(
-            context.scene.albam.tools_settings,
-            "bone_names_preset",
-            text="",
-        )
-        layout.separator()
-        row = layout.row()
-        row.operator('albam.separate_by_material', text="Separate by material")
-        row.prop(
-            context.scene.albam.tools_settings,
-            "use_clones",
-            text="Use clones for separation",
-        )
-        row = layout.row()
-        row.operator('albam.batch_props_paste', text="Batch paste mesh props").prop_type = "mesh"
-        row.operator('albam.batch_props_paste', text="Batch paste material props").prop_type = "material"
-        row = layout.row()
-        row.operator('albam.remove_empty_vertex_groups', text="Remove empty vertex groups")
-        row = layout.row()
-        row.operator('albam.remove_unused_material_slots', text="Remove unused material slots")
-        row = layout.row()
-        row.label(text="Active Armature")
-        row = layout.row()
-        row.prop(context.scene.albam.armatures, "all_armatures", text="")
-        row = layout.row()
-        row.operator('albam.set_armature_object', text="Set armature object")
+        ts = context.scene.albam.tools_settings
+
+        # ── Mesh ──
+        box = layout.box()
+        box.label(text="Mesh", icon="MESH_DATA")
+        box.prop(context.scene.albam.meshes, "all_meshes", text="")
+        row = box.row()
+        op = row.operator('albam.split_uv_seams', text="Split UV Seams", icon="UV")
+        op.transfer_normals = ts.split_uv_seams_transfer_normals
+        row.prop(ts, "split_uv_seams_transfer_normals", text="Transfer Normals")
+        box.operator('albam.transfer_normals', text="Transfer Normals from Active",
+                     icon="NORMALS_FACE")
+        box.operator('albam.batch_transfer_weights', text="Transfer Weights from Active",
+                     icon="MOD_VERTEX_WEIGHT")
+        row = box.row()
+        row.operator('albam.separate_by_material', text="Separate by Material",
+                     icon="MATERIAL")
+        row.prop(ts, "use_clones", text="Use Clones")
+        row = box.row()
+        row.operator('albam.batch_props_paste', text="Paste Mesh Props",
+                     icon="PASTEDOWN").prop_type = "mesh"
+        row.operator('albam.batch_props_paste', text="Paste Material Props",
+                     icon="PASTEDOWN").prop_type = "material"
+
+        # ── Cleanup ──
+        box = layout.box()
+        box.label(text="Cleanup", icon="BRUSH_DATA")
+        box.operator('albam.remove_empty_vertex_groups', text="Remove Empty Vertex Groups",
+                     icon="GROUP_VERTEX")
+        box.operator('albam.remove_unused_material_slots', text="Remove Unused Material Slots",
+                     icon="REMOVE")
+
+        # ── Textures ──
+        box = layout.box()
+        box.label(text="Textures", icon="TEXTURE")
+        row = box.row()
+        row.operator('albam.autoset_tex_params', text="Autoset Texture Params",
+                     icon="FILE_REFRESH")
+        row.prop(ts, "overwrite_tex_path", text="Overwrite")
+        box.prop(ts, "relative_path_to_textures", text="")
+
+        # ── Bones ──
+        box = layout.box()
+        box.label(text="Bones", icon="BONE_DATA")
+        box.prop(context.scene.albam.armatures, "all_armatures", text="")
+        row = box.row()
+        row.operator('albam.autorename_bones', text="Autorename Bones",
+                     icon="SORTALPHA")
+        row.prop(ts, "bone_names_preset", text="")
+        box.operator('albam.set_armature_object', text="Set Armature Object",
+                     icon="ARMATURE_DATA")
 
 
 @blender_registry.register_blender_type
